@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Camera Mouse — Settings</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a12;--card:rgba(255,255,255,0.04);--card-border:rgba(255,255,255,0.08);
+  --accent:#00d4ff;--accent2:#7c3aed;--green:#10b981;--amber:#f59e0b;--red:#ef4444;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#475569;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+  background:linear-gradient(135deg,#0a0a12 0%,#0f0a1e 40%,#0a0f1a 100%)}
+.container{max-width:880px;margin:0 auto;padding:24px 16px 60px}
+h1{font-size:1.6rem;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
+.subtitle{color:var(--text2);font-size:0.82rem;margin-bottom:24px}
+
+/* Status Bar */
+.status-bar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+.status-pill{background:var(--card);border:1px solid var(--card-border);border-radius:20px;
+  padding:6px 14px;font-size:0.75rem;display:flex;align-items:center;gap:6px;
+  backdrop-filter:blur(12px);transition:all 0.3s}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--text3);transition:background 0.3s}
+.status-dot.active{background:var(--green);box-shadow:0 0 8px var(--green)}
+.status-dot.warn{background:var(--amber);box-shadow:0 0 8px var(--amber)}
+.status-dot.error{background:var(--red);box-shadow:0 0 8px var(--red)}
+.status-dot.accent{background:var(--accent);box-shadow:0 0 8px var(--accent)}
+
+/* Cards */
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:16px;
+  padding:20px 22px;margin-bottom:16px;backdrop-filter:blur(16px);
+  transition:border-color 0.3s,box-shadow 0.3s}
+.card:hover{border-color:rgba(255,255,255,0.12);box-shadow:0 4px 24px rgba(0,0,0,0.2)}
+.card-title{font-size:0.9rem;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card-title .icon{font-size:1.1rem}
+
+/* Slider rows */
+.slider-row{margin-bottom:14px}
+.slider-row:last-child{margin-bottom:0}
+.slider-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.slider-label span{font-size:0.78rem;color:var(--text2)}
+.slider-label .val{font-weight:600;color:var(--accent);font-size:0.82rem;
+  background:rgba(0,212,255,0.1);padding:2px 8px;border-radius:8px}
+input[type=range]{-webkit-appearance:none;width:100%;height:5px;border-radius:4px;
+  background:rgba(255,255,255,0.08);outline:none;transition:background 0.2s}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;
+  border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid var(--bg);
+  box-shadow:0 0 8px rgba(0,212,255,0.4);transition:transform 0.15s,box-shadow 0.15s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);
+  box-shadow:0 0 14px rgba(0,212,255,0.6)}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;
+  background:var(--accent);cursor:pointer;border:2px solid var(--bg)}
+
+/* Toggle */
+.toggle-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.toggle-row label{font-size:0.78rem;color:var(--text2)}
+.toggle{position:relative;width:44px;height:24px;cursor:pointer}
+.toggle input{opacity:0;width:0;height:0}
+.toggle .track{position:absolute;inset:0;background:rgba(255,255,255,0.1);border-radius:12px;
+  transition:background 0.3s}
+.toggle input:checked+.track{background:var(--accent)}
+.toggle .knob{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;
+  background:#fff;transition:transform 0.25s cubic-bezier(0.4,0,0.2,1);
+  box-shadow:0 1px 4px rgba(0,0,0,0.3)}
+.toggle input:checked~.knob{transform:translateX(20px)}
+
+/* Buttons */
+.btn{padding:10px 20px;border-radius:10px;border:none;font-family:'Inter',sans-serif;
+  font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.25s;display:inline-flex;
+  align-items:center;gap:6px}
+.btn-accent{background:linear-gradient(135deg,var(--accent),#0094b8);color:#000}
+.btn-accent:hover{box-shadow:0 4px 20px rgba(0,212,255,0.3);transform:translateY(-1px)}
+.btn-green{background:linear-gradient(135deg,var(--green),#059669);color:#fff}
+.btn-green:hover{box-shadow:0 4px 20px rgba(16,185,129,0.3);transform:translateY(-1px)}
+.btn-red{background:linear-gradient(135deg,var(--red),#b91c1c);color:#fff}
+.btn-red:hover{box-shadow:0 4px 20px rgba(239,68,68,0.3);transform:translateY(-1px)}
+.btn-outline{background:transparent;border:1px solid var(--card-border);color:var(--text2)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-group{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+
+/* Calibration visual */
+.calib-visual{background:rgba(0,0,0,0.3);border-radius:10px;padding:16px;margin-top:12px;
+  position:relative;aspect-ratio:16/9;overflow:hidden;border:1px solid var(--card-border)}
+.calib-box{position:absolute;border:2px dashed var(--green);border-radius:4px;
+  transition:all 0.3s;opacity:0}
+.calib-box.active{opacity:1}
+.calib-label{position:absolute;bottom:8px;right:10px;font-size:0.65rem;color:var(--text3)}
+.calib-dot{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 10px var(--accent);transition:all 0.15s;transform:translate(-50%,-50%)}
+.calib-status{text-align:center;font-size:0.8rem;color:var(--text2);margin-top:8px}
+
+/* Grid */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:640px){.grid-2{grid-template-columns:1fr}}
+
+/* Pulse animation for calibrating */
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+.pulsing{animation:pulse 1.5s ease-in-out infinite}
+
+/* Presets */
+.preset-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.chip{padding:6px 14px;border-radius:20px;border:1px solid var(--card-border);
+  font-size:0.72rem;cursor:pointer;color:var(--text2);transition:all 0.2s;background:transparent}
+.chip:hover,.chip.active{border-color:var(--accent);color:var(--accent);
+  background:rgba(0,212,255,0.08)}
+
+.section-divider{height:1px;background:linear-gradient(90deg,transparent,var(--card-border),transparent);margin:6px 0 14px}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>⚡ Camera Mouse Settings</h1>
+  <p class="subtitle">Adjust gesture controls, cursor behavior, and calibration in real-time</p>
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <div class="status-pill"><span class="status-dot" id="dot-hand"></span><span id="st-hand">No Hand</span></div>
+    <div class="status-pill"><span class="status-dot accent" id="dot-mode"></span><span id="st-mode">WAITING</span></div>
+    <div class="status-pill">🖱️ <span id="st-cursor">0, 0</span></div>
+    <div class="status-pill">👆 <span id="st-fingers">0</span> fingers</div>
+    <div class="status-pill">⚡ <span id="st-fps">0</span> FPS</div>
+    <div class="status-pill"><span class="status-dot" id="dot-accel"></span><span id="st-accel">Accel OFF</span></div>
+  </div>
+
+  <div class="grid-2">
+    <!-- Cursor Movement -->
+    <div class="card">
+      <div class="card-title"><span class="icon">🖱️</span> Cursor Movement</div>
+      <div class="slider-row">
+        <div class="slider-label"><span>Smoothing</span><span class="val" id="v-smoothing">0.5</span></div>
+        <input type="range" id="smoothing" min="0.1" max="0.9" step="0.05" value="0.5">
+      </div>
+      <div class="slider-row">
+        <div class="slider-label"><span>Sensitivity X</span><span class="val" id="v-sensitivity_x">1.6</span></div>
+        <input type="range" id="sensitivity_x" min="0.5" max="3.0" step="0.1" value="1.6">
+      </div>
+      <div class="slider-row">
+        <div class="slider-label"><span>Sensitivity Y</span><span class="val" id="v-sensitivity_y">1.6</span></div>
+        <input type="range" id="sensitivity_y" min="0.5" max="3.0" step="0.1" value="1.6">
+      </div>
+      <div class="slider-row">
+        <div class="slider-label"><span>Max Cursor Speed</span><span class="val" id="v-max_cursor_speed">120</span></div>
+        <input type="range" id="max_cursor_speed" min="20" max="300" step="5" value="120">
+      </div>
+      <div class="section-divider"></div>
+      <div class="card-title" style="font-size:0.78rem;margin-bottom:6px">Quick Presets</div>
+      <div class="preset-chips">
+        <div class="chip" onclick="applyPreset('precision')">🎯 Precision</div>
+        <div class="chip" onclick="applyPreset('balanced')">⚖️ Balanced</div>
+        <div class="chip" onclick="applyPreset('fast')">🚀 Fast</div>
+      </div>
+    </div>
+
+    <!-- Cursor Acceleration -->
+    <div class="card">
+      <div class="card-title"><span class="icon">🏎️</span> Cursor Acceleration</div>
+      <div class="toggle-row">
+        <label>Enable adaptive speed (slow=precise, fast=speedy)</label>
+        <label class="toggle"><input type="checkbox" id="acceleration_enabled">
+          <span class="track"></span><span class="knob"></span></label>
+      </div>
+      <div id="accel-settings">
+        <div class="slider-row">
+          <div class="slider-label"><span>Min Speed (precision)</span><span class="val" id="v-accel_min_multiplier">0.5</span></div>
+          <input type="range" id="accel_min_multiplier" min="0.2" max="1.0" step="0.05" value="0.5">
+        </div>
+        <div class="slider-row">
+          <div class="slider-label"><span>Max Speed (fast move)</span><span class="val" id="v-accel_max_multiplier">2.5</span></div>
+          <input type="range" id="accel_max_multiplier" min="1.5" max="5.0" step="0.1" value="2.5">
+        </div>
+        <div class="slider-row">
+          <div class="slider-label"><span>Low Threshold</span><span class="val" id="v-accel_threshold_low">0.008</span></div>
+          <input type="range" id="accel_threshold_low" min="0.002" max="0.03" step="0.001" value="0.008">
+        </div>
+        <div class="slider-row">
+          <div class="slider-label"><span>High Threshold</span><span class="val" id="v-accel_threshold_high">0.06</span></div>
+          <input type="range" id="accel_threshold_high" min="0.02" max="0.15" step="0.005" value="0.06">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <!-- Scroll & Gesture Detection -->
+    <div class="card">
+      <div class="card-title"><span class="icon">📜</span> Scroll & Detection</div>
+      <div class="slider-row">
+        <div class="slider-label"><span>Scroll Sensitivity</span><span class="val" id="v-scroll_sensitivity">12</span></div>
+        <input type="range" id="scroll_sensitivity" min="1" max="30" step="1" value="12">
+      </div>
+      <div class="slider-row">
+        <div class="slider-label"><span>Mode Switch Delay</span><span class="val" id="v-mode_switch_delay">0.15</span></div>
+        <input type="range" id="mode_switch_delay" min="0.05" max="0.5" step="0.01" value="0.15">
+      </div>
+      <div class="slider-row">
+        <div class="slider-label"><span>Boundary Padding</span><span class="val" id="v-boundary_pad">0.08</span></div>
+        <input type="range" id="boundary_pad" min="0.0" max="0.2" step="0.01" value="0.08">
+      </div>
+      <div class="slider-row">
+        <div class="slider-label"><span>Thumb Margin</span><span class="val" id="v-thumb_margin">0.04</span></div>
+        <input type="range" id="thumb_margin" min="0.01" max="0.1" step="0.005" value="0.04">
+      </div>
+      <div class="slider-row">
+        <div class="slider-label"><span>Thumb Distance</span><span class="val" id="v-thumb_dist_threshold">0.08</span></div>
+        <input type="range" id="thumb_dist_threshold" min="0.03" max="0.15" step="0.005" value="0.08">
+      </div>
+    </div>
+
+    <!-- Calibration -->
+    <div class="card">
+      <div class="card-title"><span class="icon">🎯</span> Hand Calibration</div>
+      <p style="font-size:0.75rem;color:var(--text3);margin-bottom:10px">
+        Move your hand to all corners of your comfortable range while calibrating. This maps your movement area to the full screen.
+      </p>
+      <div class="btn-group">
+        <button class="btn btn-green" id="btn-calib-start" onclick="calibStart()">▶ Start Calibration</button>
+        <button class="btn btn-red" id="btn-calib-stop" onclick="calibStop()" style="display:none">⏹ Stop</button>
+        <button class="btn btn-outline" onclick="calibReset()">↺ Reset</button>
+      </div>
+      <div class="calib-visual" id="calib-visual">
+        <div class="calib-box" id="calib-box"></div>
+        <div class="calib-dot" id="calib-dot" style="display:none"></div>
+        <div class="calib-label">Hand tracking area</div>
+      </div>
+      <div class="calib-status" id="calib-status">No calibration active</div>
+    </div>
+  </div>
+
+  <!-- Gesture Reference -->
+  <div class="card" style="margin-top:8px">
+    <div class="card-title"><span class="icon">✋</span> Gesture Reference</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px">
+      <div class="status-pill" style="justify-content:center">☝️ 1F → Move</div>
+      <div class="status-pill" style="justify-content:center">✌️ 2F → L-Click</div>
+      <div class="status-pill" style="justify-content:center">🤟 3F → R-Click</div>
+      <div class="status-pill" style="justify-content:center">🖐️ 4F → Scroll</div>
+      <div class="status-pill" style="justify-content:center">✋ 5F → Copy</div>
+      <div class="status-pill" style="justify-content:center">🤲 6F → Paste</div>
+      <div class="status-pill" style="justify-content:center">📸 7F → Screenshot</div>
+      <div class="status-pill" style="justify-content:center">🙌 10F → Help</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = '';
+const SETTINGS_KEYS = [
+  'smoothing','sensitivity_x','sensitivity_y','max_cursor_speed','scroll_sensitivity',
+  'mode_switch_delay','boundary_pad','thumb_margin','thumb_dist_threshold',
+  'acceleration_enabled','accel_min_multiplier','accel_max_multiplier',
+  'accel_threshold_low','accel_threshold_high'
+];
+
+const PRESETS = {
+  precision: {smoothing:0.3,sensitivity_x:1.0,sensitivity_y:1.0,max_cursor_speed:50,
+    acceleration_enabled:true,accel_min_multiplier:0.3,accel_max_multiplier:1.5},
+  balanced: {smoothing:0.5,sensitivity_x:1.6,sensitivity_y:1.6,max_cursor_speed:80,
+    acceleration_enabled:true,accel_min_multiplier:0.5,accel_max_multiplier:2.5},
+  fast: {smoothing:0.65,sensitivity_x:2.2,sensitivity_y:2.2,max_cursor_speed:200,
+    acceleration_enabled:true,accel_min_multiplier:0.8,accel_max_multiplier:4.0}
+};
+
+// Init: bind all slider/toggle events
+document.querySelectorAll('input[type=range]').forEach(el => {
+  el.addEventListener('input', () => {
+    document.getElementById('v-'+el.id).textContent = el.value;
+    sendSettings();
+  });
+});
+document.getElementById('acceleration_enabled').addEventListener('change', () => {
+  sendSettings();
+  updateAccelUI();
+});
+
+function updateAccelUI() {
+  const on = document.getElementById('acceleration_enabled').checked;
+  document.getElementById('accel-settings').style.opacity = on ? '1' : '0.35';
+  document.getElementById('accel-settings').style.pointerEvents = on ? 'auto' : 'none';
+  document.getElementById('st-accel').textContent = on ? 'Accel ON' : 'Accel OFF';
+  document.getElementById('dot-accel').className = 'status-dot' + (on ? ' active' : '');
+}
+
+function gatherSettings() {
+  const s = {};
+  SETTINGS_KEYS.forEach(k => {
+    const el = document.getElementById(k);
+    if (!el) return;
+    if (el.type === 'checkbox') s[k] = el.checked;
+    else s[k] = parseFloat(el.value);
+  });
+  return s;
+}
+
+function applySettingsToUI(s) {
+  SETTINGS_KEYS.forEach(k => {
+    const el = document.getElementById(k);
+    if (!el || s[k] === undefined) return;
+    if (el.type === 'checkbox') el.checked = s[k];
+    else { el.value = s[k]; const vEl = document.getElementById('v-'+k); if(vEl) vEl.textContent = s[k]; }
+  });
+  updateAccelUI();
+}
+
+async function sendSettings() {
+  try {
+    const r = await fetch(API+'/api/settings', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(gatherSettings())
+    });
+  } catch(e) {}
+}
+
+async function loadSettings() {
+  try {
+    const r = await fetch(API+'/api/settings');
+    const s = await r.json();
+    applySettingsToUI(s);
+  } catch(e) {}
+}
+
+async function pollStatus() {
+  try {
+    const r = await fetch(API+'/api/status');
+    const s = await r.json();
+    // Hand
+    const handDot = document.getElementById('dot-hand');
+    document.getElementById('st-hand').textContent = s.hand_detected ? 'Hand Detected' : 'No Hand';
+    handDot.className = 'status-dot ' + (s.hand_detected ? 'active' : 'error');
+    // Mode
+    document.getElementById('st-mode').textContent = s.mode;
+    // Cursor
+    document.getElementById('st-cursor').textContent = s.cursor_x + ', ' + s.cursor_y;
+    // Fingers
+    document.getElementById('st-fingers').textContent = s.fingers;
+    // FPS
+    document.getElementById('st-fps').textContent = s.fps;
+    // Calibration
+    updateCalibVisual(s);
+  } catch(e) {}
+}
+
+function updateCalibVisual(s) {
+  const box = document.getElementById('calib-box');
+  const dot = document.getElementById('calib-dot');
+  const status = document.getElementById('calib-status');
+  const vis = document.getElementById('calib-visual');
+  const w = vis.clientWidth, h = vis.clientHeight;
+
+  if (s.calibrating) {
+    status.textContent = '🔴 Calibrating... move hand to all corners';
+    status.classList.add('pulsing');
+    document.getElementById('btn-calib-start').style.display = 'none';
+    document.getElementById('btn-calib-stop').style.display = 'inline-flex';
+
+    if (s.calib_bounds) {
+      box.style.left = (s.calib_bounds.min_x * 100) + '%';
+      box.style.top = (s.calib_bounds.min_y * 100) + '%';
+      box.style.width = ((s.calib_bounds.max_x - s.calib_bounds.min_x) * 100) + '%';
+      box.style.height = ((s.calib_bounds.max_y - s.calib_bounds.min_y) * 100) + '%';
+      box.classList.add('active');
+    }
+    if (s.hand_x_raw !== undefined) {
+      dot.style.display = 'block';
+      dot.style.left = (s.hand_x_raw * 100) + '%';
+      dot.style.top = (s.hand_y_raw * 100) + '%';
+    }
+  } else {
+    status.classList.remove('pulsing');
+    document.getElementById('btn-calib-start').style.display = 'inline-flex';
+    document.getElementById('btn-calib-stop').style.display = 'none';
+    dot.style.display = 'none';
+
+    if (s.calib_active) {
+      const b = s.calib_active;
+      box.style.left = (b.min_x * 100) + '%';
+      box.style.top = (b.min_y * 100) + '%';
+      box.style.width = ((b.max_x - b.min_x) * 100) + '%';
+      box.style.height = ((b.max_y - b.min_y) * 100) + '%';
+      box.classList.add('active');
+      box.style.borderColor = 'var(--accent)';
+      status.textContent = '✅ Calibration active — custom boundaries applied';
+    } else {
+      box.classList.remove('active');
+      box.style.borderColor = '';
+      status.textContent = 'No calibration active — using default boundaries';
+    }
+  }
+}
+
+async function calibStart() {
+  try { await fetch(API+'/api/calibration/start', {method:'POST'}); } catch(e){}
+}
+async function calibStop() {
+  try { await fetch(API+'/api/calibration/stop', {method:'POST'}); } catch(e){}
+}
+async function calibReset() {
+  try { await fetch(API+'/api/calibration/reset', {method:'POST'}); } catch(e){}
+}
+
+function applyPreset(name) {
+  const p = PRESETS[name];
+  if (!p) return;
+  Object.entries(p).forEach(([k,v]) => {
+    const el = document.getElementById(k);
+    if (!el) return;
+    if (el.type === 'checkbox') el.checked = v;
+    else { el.value = v; const vEl = document.getElementById('v-'+k); if(vEl) vEl.textContent = v; }
+  });
+  sendSettings();
+  updateAccelUI();
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+// Initial load
+loadSettings();
+updateAccelUI();
+// Poll status every 400ms
+setInterval(pollStatus, 400);
+</script>
+</body>
+</html>
